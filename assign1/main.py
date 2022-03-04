@@ -10,15 +10,15 @@ from decision_tree import TreeNode, DCT
 from random_foreset import RFT
 from random import randrange
 from utils import *
-
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))    
 ###################### Param setting ############################
 # Decition Tree = 0, Random Forest = 1, SVM = 2, kNN = 3
 algorithm = WhichAlgorithm.DCT
 
 Training = True    
 k_fold_load = False 
-n_data = 10000
-n_feats = 1000
+n_data = 100
+n_feats = 100
 n_threshold = 10
 Tree_max_depth = 20
 
@@ -27,20 +27,22 @@ test_with_train_data = False
 
 
 if algorithm is WhichAlgorithm.DCT:
-    trained_file_name = 'dct_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+    trained_file_name = 'trained_weigths/dct_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
 elif algorithm is WhichAlgorithm.RFT:
-    trained_file_name = 'rft_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+    trained_file_name = 'trained_weigths/rft_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
 elif algorithm is WhichAlgorithm.SVM:
-    trained_file_name = 'svm_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+    trained_file_name = 'trained_weigths/svm_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
 elif algorithm is WhichAlgorithm.KNN:
-    trained_file_name = 'knn_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+    trained_file_name = 'trained_weigths/knn_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
 else:
     print("Pls select the algorithm to run")
+
+trained_file_name =  os.path.join(__location__, trained_file_name)
 
 
 
 def load_data():
-    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))    
+    
     file_dir1 =  os.path.join(__location__, 'cifar10/data_batch_1')
     file_dir2 =  os.path.join(__location__, 'cifar10/data_batch_2')
     file_dir3 =  os.path.join(__location__, 'cifar10/data_batch_3')
@@ -92,19 +94,6 @@ def k_fold_data_load(numFolds = 2):
     
 if __name__ == "__main__":    
     
-    # from sklearn import datasets
-    # from sklearn.model_selection import train_test_split
-
-    def accuracy(y_true, y_pred):
-        accuracy = np.sum(y_true == y_pred) / len(y_true)
-        return accuracy
-
-    # data = datasets.load_breast_cancer()
-    # X, y = data.data, data.target
-
-    # X_train_, X_test_, y_train_, y_test_ = train_test_split(
-    #     X, y, test_size=0.2, random_state=1234
-    # )
     
 ###################### Load Data  ############################
     if k_fold_load:
@@ -114,43 +103,48 @@ if __name__ == "__main__":
     
  
     X_train_, y_train_ = sample_data(X_train_, y_train_, n_data)
-###################### Load Data END ############################
-    
+#>>>>>>>>>>>>>>>>>>>>> Load Data END   #<<<<<<<<<<<<<<<<<<<<
 
 
-###################### Train Data  ############################
+###################### Train Model  ############################
     if Training:
         if algorithm is WhichAlgorithm.DCT:
-            training_model = DCT(Tree_max_depth=Tree_max_depth,n_feats = n_feats, n_threshold = n_threshold)
-            training_model.train(X_train_, y_train_)            
+            train_model = DCT(Tree_max_depth=Tree_max_depth,n_feats = n_feats, n_threshold = n_threshold)
+            train_model.train(X_train_, y_train_)            
         elif algorithm is WhichAlgorithm.RFT:            
-            training_model = RFT(Tree_max_depth=Tree_max_depth,max_n_feats = n_feats, max_n_threshold = n_threshold, n_trees = 3)            
+            train_model = RFT(Tree_max_depth=Tree_max_depth,max_n_feats = n_feats, max_n_threshold = n_threshold, n_trees = 3)            
         elif algorithm is WhichAlgorithm.SVM:
             print("SVM is not available yet")
         elif algorithm is WhichAlgorithm.KNN:
             print("KNN is not available yet")
         
-        training_model.train(X_train_, y_train_)
+        train_model.train(X_train_, y_train_)
         
         with open(trained_file_name,'wb') as outp:            
-            pickle.dump(training_model,outp,pickle.HIGHEST_PROTOCOL)
+            pickle.dump(train_model,outp,pickle.HIGHEST_PROTOCOL)
             print("Trained model saved= " + trained_file_name)
     
-###################### Train Data END  ############################
+#>>>>>>>>>>>>>>>>>>>>> Train Model END  #<<<<<<<<<<<<<<<<<<<<
     
 
-###################### Test  ############################
+###################### Test Model ############################
     if not Training:
         print("No more Training, Loading trained model = " + trained_file_name)
-        with open(trained_file_name,'rb') as inp:
-            train_model = pickle.load(inp)
+        try:
+            with open(trained_file_name,'rb') as inp:
+                train_model = pickle.load(inp)
+        except EnvironmentError:
+            print ('Trained model NOT found!!, you can start train model instead by setting (Training = True)')
+            sys.exit()
+
     if test_with_train_data:
         y_pred = train_model.predict(X_train_)
         acc = accuracy(y_train_, y_pred)
     else:
         y_pred = train_model.predict(X_test_)
         acc = accuracy(y_test_, y_pred)
-###################### Test END ############################
+
+#>>>>>>>>>>>>>>>>>>>>> Test Model END  #<<<<<<<<<<<<<<<<<<<<
     
 
 
