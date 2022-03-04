@@ -26,9 +26,9 @@ class KNN:
     def fit(self, X, y):        
         self.x_sample = X 
         self.y_sample = y                  
-        sample_idxs = np.random.choice(len(self.x_sample[:,0]), self.n_random_sample, replace=False)
-        self.x_sample = self.x_sample[sample_idxs,:]        
-        self.y_sample = np.array(self.y_sample[sample_idxs])
+        # sample_idxs = np.random.choice(len(self.x_sample[:,0]), self.n_random_sample, replace=False)
+        # self.x_sample = self.x_sample[sample_idxs,:]        
+        # self.y_sample = np.array(self.y_sample[sample_idxs])
         
         self.n_samples, self.n_features = self.x_sample.shape
         if self.cluster_size is None:

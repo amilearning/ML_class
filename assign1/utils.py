@@ -1,12 +1,11 @@
 import numpy as np
 from enum import Enum
+import copy
 
-class param_set:
-    def __init__(self):
-        self.dct_best_param = None 
-        self.rft_best_param = None
-        self.svm_best_param = None 
-        self.knn_best_param = None
+        
+
+       
+        
      
 class WhichAlgorithm(Enum):
      # Decition Tree = 0, Random Forest = 1, SVM = 2, kNN = 3
@@ -39,3 +38,99 @@ def accuracy(y_true, y_pred):
 
 def euclidean_distance(x,y):    
     return np.sqrt(np.sum(x-y)**2)
+
+
+class param_set:
+    def __init__(self):
+        self.dct_best_param = None 
+        self.rft_best_param = None
+        self.svm_best_param = None 
+        self.knn_best_param = None
+    
+        self.param_set_ =[]
+        
+        algorithms      = [WhichAlgorithm.DCT, WhichAlgorithm.RFT, WhichAlgorithm.SVM, WhichAlgorithm.KNN]
+        Tree_max_depths = np.linspace(20,21,1,dtype = int)
+        n_feats         = np.array([200, 500])
+        n_threshold     = np.linspace(10,20,2,dtype = int)
+        n_trees         = np.array([1, 2])
+
+        kernel          = ['linear', 'poly', 'rbf']
+        degree          = np.array([3, 4])
+        gamma           = np.array([0.1, 1])
+        C_param         = np.array([1, 10])
+
+        
+        KMean_enbled    = ['True', 'False']
+        knn_param_k     = np.array([10,11])
+        k_mean_max_iters= np.array([100,500])
+
+
+        param_default = {}
+        param_default["algorithms"]         = algorithms[0]
+        param_default["Tree_max_depths"]    = Tree_max_depths[0]
+        param_default["n_feats"]            = n_feats[0]
+        param_default["n_threshold"]        = n_threshold[0]
+        param_default["n_trees"]            = n_trees[0]
+        param_default["kernel"]             = kernel[0]
+        param_default["degree"]             = degree[0]
+        param_default["gamma"]              = gamma[0]
+        param_default["C_param"]            = C_param[0]        
+        param_default["KMean_enbled"]       = KMean_enbled[0]
+        param_default["knn_param_k"]        = knn_param_k[0]
+        param_default["k_mean_max_iters"]   = k_mean_max_iters[0]
+        
+        ##################### For DCT ###################        
+        for Tree_max_depth in Tree_max_depths:
+            for n_feat in n_feats:
+                for threshold in n_threshold:                    
+                    param = copy.deepcopy(param_default)
+                    param["algorithms"]      = algorithms[0]
+                    param["Tree_max_depths"] = Tree_max_depth
+                    param["n_feats"]         = n_feat
+                    param["n_threshold"]     = threshold
+                    self.param_set_.append(param)
+                       
+
+        ##################### For RFT ###################        
+        for Tree_max_depth in Tree_max_depths:
+            for n_feat in n_feats:
+                for threshold in n_threshold:                    
+                    for n_tree in n_trees:    
+                        param = copy.deepcopy(param_default)
+                        param["algorithms"]         = algorithms[1]
+                        param["Tree_max_depths"]    = Tree_max_depth
+                        param["n_feats"]            = n_feat
+                        param["n_threshold"]        = threshold
+                        param["n_trees"]            = n_tree
+                        self.param_set_.append(param)
+
+
+        ##################### For SVM ###################                
+        for kernel_ in kernel:
+            for degree_ in degree:                    
+                for gamma_ in gamma:    
+                    for C_param_ in C_param:    
+                        param = copy.deepcopy(param_default)
+                        param["algorithms"]  = algorithms[2]                        
+                        param["kernel"]      = kernel
+                        param["degree"]      = degree
+                        param["gamma"]       = gamma
+                        param["C_param"]     = C_param
+                        self.param_set_.append(param)
+                   
+               
+        ##################### For KNN ###################                
+        for KMean_enbled_ in KMean_enbled:
+            for knn_param_k_ in knn_param_k:                    
+                for k_mean_max_iters_ in k_mean_max_iters:                        
+                    param = copy.deepcopy(param_default)
+                    param["algorithms"]         = algorithms[3] 
+                    param["KMean_enbled"]       = KMean_enbled_
+                    param["knn_param_k"]        = knn_param_k_
+                    param["k_mean_max_iters"]   = k_mean_max_iters_
+                    self.param_set_.append(param)
+
+
+
+        
