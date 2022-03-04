@@ -50,19 +50,20 @@ class param_set:
         self.param_set_ =[]
         
         algorithms      = [WhichAlgorithm.DCT, WhichAlgorithm.RFT, WhichAlgorithm.SVM, WhichAlgorithm.KNN]
-        Tree_max_depths = np.linspace(20,21,1,dtype = int)
-        n_feats         = np.array([200, 500])
-        n_threshold     = np.linspace(10,20,2,dtype = int)
-        n_trees         = np.array([1, 2])
+        
+        Tree_max_depths = np.array([30])
+        n_feats         = np.array([200, 500, 1000])
+        n_threshold     = np.array([10, 20])
+        n_trees         = np.array([1, 5, 10])
 
         kernel          = ['linear', 'poly', 'rbf']
         degree          = np.array([3, 4])
-        gamma           = np.array([0.1, 1])
-        C_param         = np.array([1, 10])
+        gamma           = np.array([0.01, 0.1, 1, 10])
+        C_param         = np.array([1, 5, 10])
 
         
         KMean_enbled    = ['True', 'False']
-        knn_param_k     = np.array([10,11])
+        knn_param_k     = np.array([10,20])
         k_mean_max_iters= np.array([100,500])
 
 
@@ -113,10 +114,10 @@ class param_set:
                     for C_param_ in C_param:    
                         param = copy.deepcopy(param_default)
                         param["algorithms"]  = algorithms[2]                        
-                        param["kernel"]      = kernel
-                        param["degree"]      = degree
-                        param["gamma"]       = gamma
-                        param["C_param"]     = C_param
+                        param["kernel"]      = kernel_
+                        param["degree"]      = degree_
+                        param["gamma"]       = gamma_
+                        param["C_param"]     = C_param_
                         self.param_set_.append(param)
                    
                

@@ -72,7 +72,7 @@ def load_data():
         data_batch_ = unpickle_from_file(file_dir)
         X_train_ = data_batch_[b'data']
         y_train_ =  np.array(data_batch_[b'labels'])
-        X_train_, y_train_ = sample_data(X_train_, y_train_,10)
+        # X_train_, y_train_ = sample_data(X_train_, y_train_,10)
         x_data_set.append(X_train_)
         y_data_set.append(y_train_)
         # if i is 1:  
@@ -207,6 +207,7 @@ if __name__ == "__main__":
             for idx, X_train_  in enumerate(X_train_set):                
                 y_train_ =  y_train_set[idx]                                         
                 train_model = KNN(KMean_enbled = KMean_enbled, k = knn_param_k, n_random_sample = None, k_mean_max_iters = k_mean_max_iters)            
+                train_model.fit(X_train_, y_train_) 
                 if KMean_enbled:
                     cluster_label = train_model.kmean_clustering()
                 y_pred = train_model.predict(X_test)
