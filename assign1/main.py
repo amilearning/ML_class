@@ -8,6 +8,16 @@ from collections import Counter
 from dct import TreeNode, DCT
 from random import randrange
 
+###################### Param setting ############################
+DCT_Training = False    
+k_fold_load = False 
+n_data = 10000
+n_feats = 20
+n_threshold = 5
+Tree_max_depth = 20
+dct_file_name = 'dct_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+test_with_train_data = False
+###################### Param setting END ########################
 
 def unpickle_from_file(file):
     import pickle
@@ -16,9 +26,9 @@ def unpickle_from_file(file):
     return dict
 
 def shrink_data(X,y,n_data=100):
-    if n_data >= len(X[0]):
-        n_data = len(X[0])-1
-    idx = np.random.choice(X[0],n_data,replace = False)
+    if n_data >= len(X):
+        n_data = len(X)-1
+    idx = np.random.choice(len(X[:,0]),n_data,replace = False)
     X = X[idx,:]
     y = y.flatten()[idx]
     return X, y
@@ -79,10 +89,7 @@ if __name__ == "__main__":
     # from sklearn import datasets
     # from sklearn.model_selection import train_test_split
 
-###################### Param setting ############################
-    k_fold_load = False 
-    
-###################### Param setting END ########################
+
 
     def accuracy(y_true, y_pred):
         accuracy = np.sum(y_true == y_pred) / len(y_true)
@@ -101,23 +108,36 @@ if __name__ == "__main__":
     else:
         X_train_, y_train_, X_test_, y_test_ = load_data()
     
-    n_data = 10000
+ 
     X_train_, y_train_ = shrink_data(X_train_, y_train_, n_data)
 ###################### Load Data END ############################
     
 
 
-
 ###################### Train Data  ############################
-    clf = DCT(Tree_max_depth=20,n_feats = 500, n_threshold = 30)
-    clf.train(X_train_, y_train_)
-
+    if DCT_Training:
+        dct_ = DCT(Tree_max_depth=Tree_max_depth,n_feats = n_feats, n_threshold = n_threshold)
+        dct_.train(X_train_, y_train_)
+        ## Save Data 
+        
+        with open(dct_file_name,'wb') as outp:            
+            pickle.dump(dct_,outp,pickle.HIGHEST_PROTOCOL)
+            print("Trained model saved= " + dct_file_name)
+    
 ###################### Train Data END  ############################
-
+    
 
 ###################### Test  ############################
-    y_pred = clf.predict(X_test_)
-    acc = accuracy(y_test_, y_pred)
+    if not DCT_Training:
+        print("No more Training, Loading trained model = " + dct_file_name)
+        with open(dct_file_name,'rb') as inp:
+            dct_ = pickle.load(inp)
+    if test_with_train_data:
+        y_pred = dct_.predict(X_train_)
+        acc = accuracy(y_train_, y_pred)
+    else:
+        y_pred = dct_.predict(X_test_)
+        acc = accuracy(y_test_, y_pred)
 ###################### Test END ############################
     
 

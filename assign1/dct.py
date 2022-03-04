@@ -81,8 +81,9 @@ class DCT:
         for feat_idx in feat_idxs:
             X_column = X[:, feat_idx]
             threshold_candidates = np.unique(X_column)
-            if len(threshold_candidates) > self.n_threshold:
-                threshold_candidates = np.random.choice(threshold_candidates,self.n_threshold,replace = False)             
+            # if len(threshold_candidates) > self.n_threshold:
+            #     threshold_candidates = np.random.choice(threshold_candidates,self.n_threshold,replace = False)             
+            threshold_candidates = np.linspace(1,254,self.n_threshold,dtype=int)
             for threshold in threshold_candidates:
                 gain = self.information_gain(y, X_column, threshold)
                 if gain > max_gain:
