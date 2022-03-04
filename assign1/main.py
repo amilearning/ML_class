@@ -10,19 +10,20 @@ from decision_tree import TreeNode, DCT
 from random_foreset import RFT
 from knn import KNN
 from random import randrange
+from sklearn import svm
 from utils import *
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))    
 
 
 ###################### Param setting ############################
 # Decition Tree = DCT , Random Forest = RFT, SVM = SVM, kNN = KNN
-algorithm = WhichAlgorithm.KNN
+algorithm = WhichAlgorithm.SVM
 
 Training = True    
 k_fold_load = False 
+n_data = 100
 
 ## Param for DCT 
-n_data = 10000
 n_feats = 100
 n_threshold = 10
 Tree_max_depth = 20
@@ -32,8 +33,9 @@ n_trees = 3
 
 ## Param for KNN
 knn_param_k = 100
-n_random_sample = 300
-
+n_random_sample = 99
+k_mean_max_iters = 1000
+KMean_enbled = False
 
 
 test_with_train_data = True
@@ -129,10 +131,13 @@ if __name__ == "__main__":
             train_model = RFT(Tree_max_depth=Tree_max_depth,max_n_feats = n_feats, max_n_threshold = n_threshold, n_trees = 3)            
         elif algorithm is WhichAlgorithm.SVM:
             print("SVM is not available yet")
-        elif algorithm is WhichAlgorithm.KNN:
-            train_model = KNN(k = knn_param_k,n_random_sample = n_random_sample)            
+        elif algorithm is WhichAlgorithm.KNN:                        
+            train_model = KNN(KMean_enbled = KMean_enbled, k = knn_param_k,n_random_sample = n_random_sample, k_mean_max_iters = k_mean_max_iters)            
+            
         
         train_model.train(X_train_, y_train_)
+        if algorithm is WhichAlgorithm.KNN and KMean_enbled:
+            cluster_label = train_model.kmean_clustering()
         
         with open(trained_file_name,'wb') as outp:            
             pickle.dump(train_model,outp,pickle.HIGHEST_PROTOCOL)
