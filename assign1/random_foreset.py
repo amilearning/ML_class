@@ -16,7 +16,7 @@ class RFT:
         self.n_trees = n_trees
         self.trees = []        
 
-    def train(self, X, y):        
+    def fit(self, X, y):        
         for _ in range(self.n_trees):
             # get random #features and #threshold 
             n_feats = np.random.randint(self.max_n_feats*0.5,self.max_n_feats)
@@ -27,7 +27,7 @@ class RFT:
             tree_ = DCT(Tree_max_depth=self.Tree_max_depth, n_feats = n_feats, n_threshold = n_threshold, tree_id = self.tree_id)            
             self.tree_id +=1
             sampled_X_train, sampled_y_train = sample_data(X,y,n_data=len(y)/5)
-            tree_.train(sampled_X_train, sampled_y_train)
+            tree_.fit(sampled_X_train, sampled_y_train)
             self.trees.append(tree_)
     
 

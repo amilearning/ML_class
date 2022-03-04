@@ -23,7 +23,7 @@ class KNN:
         self.cluster_y_label_history = []
         
 
-    def train(self, X, y):        
+    def fit(self, X, y):        
         self.x_sample = X 
         self.y_sample = y                  
         sample_idxs = np.random.choice(len(self.x_sample[:,0]), self.n_random_sample, replace=False)

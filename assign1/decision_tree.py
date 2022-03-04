@@ -40,7 +40,7 @@ class DCT:
         self.n_feats = n_feats
         self.n_threshold = n_threshold
 
-    def train(self, X, y):
+    def fit(self, X, y):
         self.feature_dim =  X.shape[1] if not self.n_feats else min(self.n_feats, X.shape[1])
         self.root_node = self.build_tree(X, y)
     

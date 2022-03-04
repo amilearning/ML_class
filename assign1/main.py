@@ -10,10 +10,10 @@ from decision_tree import TreeNode, DCT
 from random_foreset import RFT
 from knn import KNN
 from random import randrange
-from sklearn import svm
+from sklearn import svm, metrics
 from utils import *
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))    
-
+from sklearn.model_selection import GridSearchCV
 
 ###################### Param setting ############################
 # Decition Tree = DCT , Random Forest = RFT, SVM = SVM, kNN = KNN
@@ -21,7 +21,7 @@ algorithm = WhichAlgorithm.SVM
 
 Training = True    
 k_fold_load = False 
-n_data = 100
+n_data = 10000
 
 ## Param for DCT 
 n_feats = 100
@@ -30,6 +30,11 @@ Tree_max_depth = 20
 ## Param for RFT
 n_trees = 3
 ## Param for SVM
+kernel = 'linear'
+svm_param_grid = [
+              {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
+              {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']},
+             ]
 
 ## Param for KNN
 knn_param_k = 100
@@ -38,7 +43,8 @@ k_mean_max_iters = 1000
 KMean_enbled = False
 
 
-test_with_train_data = True
+
+test_with_train_data = False
 ###################### Param setting END ########################
 
 
@@ -126,16 +132,18 @@ if __name__ == "__main__":
     if Training:
         if algorithm is WhichAlgorithm.DCT:
             train_model = DCT(Tree_max_depth=Tree_max_depth,n_feats = n_feats, n_threshold = n_threshold)
-            train_model.train(X_train_, y_train_)            
+            train_model.fit(X_train_, y_train_)            
         elif algorithm is WhichAlgorithm.RFT:            
             train_model = RFT(Tree_max_depth=Tree_max_depth,max_n_feats = n_feats, max_n_threshold = n_threshold, n_trees = 3)            
         elif algorithm is WhichAlgorithm.SVM:
-            print("SVM is not available yet")
+            train_model = svm.SVC(kernel = kernel)            
+            svc = svm.SVC()
+            train_model = GridSearchCV(svc, svm_param_grid)            
         elif algorithm is WhichAlgorithm.KNN:                        
             train_model = KNN(KMean_enbled = KMean_enbled, k = knn_param_k,n_random_sample = n_random_sample, k_mean_max_iters = k_mean_max_iters)            
             
         
-        train_model.train(X_train_, y_train_)
+        train_model.fit(X_train_, y_train_)
         if algorithm is WhichAlgorithm.KNN and KMean_enbled:
             cluster_label = train_model.kmean_clustering()
         
@@ -159,13 +167,16 @@ if __name__ == "__main__":
     if test_with_train_data:
         y_pred = train_model.predict(X_train_)
         acc = accuracy(y_train_, y_pred)
+        print("Classification report for - \n{}:\n{}\n".format(
+        train_model, metrics.classification_report(y_train_, y_pred)))
     else:
         y_pred = train_model.predict(X_test_)
         acc = accuracy(y_test_, y_pred)
-
+        print("Classification report for - \n{}:\n{}\n".format(
+        train_model, metrics.classification_report(y_test_, y_pred)))
+        
+    
 #>>>>>>>>>>>>>>>>>>>>> Test Model END  #<<<<<<<<<<<<<<<<<<<<
     
-
-
 
     print("Accuracy:", acc)

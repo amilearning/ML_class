@@ -1,6 +1,13 @@
 import numpy as np
 from enum import Enum
 
+class param_set:
+    def __init__(self):
+        self.dct_best_param = None 
+        self.rft_best_param = None
+        self.svm_best_param = None 
+        self.knn_best_param = None
+     
 class WhichAlgorithm(Enum):
      # Decition Tree = 0, Random Forest = 1, SVM = 2, kNN = 3
      DCT = 0
