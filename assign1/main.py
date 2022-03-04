@@ -1,10 +1,11 @@
 
+from distutils.log import error
 import sys 
 import numpy as np
 import os
 import pickle 
 from collections import Counter 
-from dct import Node, DecisionTree
+from dct import TreeNode, DCT
 from random import randrange
 
 
@@ -14,6 +15,13 @@ def unpickle_from_file(file):
         dict = pickle.load(fo, encoding='bytes')
     return dict
 
+def shrink_data(X,y,n_data=100):
+    if n_data >= len(X[0]):
+        n_data = len(X[0])-1
+    idx = np.random.choice(X[0],n_data,replace = False)
+    X = X[idx,:]
+    y = y.flatten()[idx]
+    return X, y
 
 def load_data():
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))    
@@ -23,7 +31,7 @@ def load_data():
     file_dir4 =  os.path.join(__location__, 'cifar10/data_batch_4')
     file_dir5 =  os.path.join(__location__, 'cifar10/data_batch_5')
     
-    for i in range(1,6):
+    for i in range(1,2):
         file_name = 'cifar10/data_batch_'+str(i)        
         file_dir = os.path.join(__location__, file_name)    
         data_batch_ = unpickle_from_file(file_dir)
@@ -35,12 +43,14 @@ def load_data():
         else:
             X_train = np.row_stack((X_train,X_train_))
             y_train = np.hstack((y_train,y_train_))
-        
+                
            
     test_file_dir =  os.path.join(__location__, 'cifar10/test_batch')    
     test_data = unpickle_from_file(test_file_dir)    
     X_test =  test_data[b'data']    
     y_test =  np.array(test_data[b'labels'])
+
+    
 
     return X_train, y_train, X_test, y_test
 
@@ -62,45 +72,45 @@ def k_fold_data_load(numFolds = 2):
 
     return x_data_set, y_data_set, X_test, y_test
 
-  
-        
-    
 
     
 if __name__ == "__main__":    
     
-    from sklearn import datasets
-    from sklearn.model_selection import train_test_split
+    # from sklearn import datasets
+    # from sklearn.model_selection import train_test_split
 
 ###################### Param setting ############################
     k_fold_load = False 
-
+    
 ###################### Param setting END ########################
 
     def accuracy(y_true, y_pred):
         accuracy = np.sum(y_true == y_pred) / len(y_true)
         return accuracy
 
-    data = datasets.load_breast_cancer()
-    X, y = data.data, data.target
+    # data = datasets.load_breast_cancer()
+    # X, y = data.data, data.target
 
-    X_train_, X_test_, y_train_, y_test_ = train_test_split(
-        X, y, test_size=0.2, random_state=1234
-    )
+    # X_train_, X_test_, y_train_, y_test_ = train_test_split(
+    #     X, y, test_size=0.2, random_state=1234
+    # )
     
 ###################### Load Data  ############################
-    if k_fold_load is True:
+    if k_fold_load:
         X_train_set, y_train_set, X_test, y_test = k_fold_data_load(numFolds = 5)
     else:
-        X_train_, X_test_, y_train_, y_test_ = load_data()
+        X_train_, y_train_, X_test_, y_test_ = load_data()
     
+    n_data = 10000
+    X_train_, y_train_ = shrink_data(X_train_, y_train_, n_data)
 ###################### Load Data END ############################
     
 
 
+
 ###################### Train Data  ############################
-    clf = DecisionTree(max_depth=10)
-    clf.fit(X_train_, y_train_)
+    clf = DCT(Tree_max_depth=20,n_feats = 500, n_threshold = 30)
+    clf.train(X_train_, y_train_)
 
 ###################### Train Data END  ############################
 
