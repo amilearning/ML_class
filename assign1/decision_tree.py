@@ -33,7 +33,7 @@ class TreeNode:
     
 
 class DCT:
-    def __init__(self, Tree_max_depth=100, n_feats = None, n_threshold = 1):        
+    def __init__(self, Tree_max_depth=100, n_feats = None, n_threshold = 1, tree_id = 0):        
         
         self.Tree_max_depth = Tree_max_depth
         self.feature_dim = None

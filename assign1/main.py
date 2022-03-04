@@ -1,37 +1,43 @@
 
 from distutils.log import error
-import sys 
+import sys
+from turtle import end_fill 
 import numpy as np
 import os
 import pickle 
 from collections import Counter 
-from dct import TreeNode, DCT
+from decision_tree import TreeNode, DCT
+from random_foreset import RFT
 from random import randrange
+from utils import *
 
 ###################### Param setting ############################
-DCT_Training = False    
+# Decition Tree = 0, Random Forest = 1, SVM = 2, kNN = 3
+algorithm = WhichAlgorithm.DCT
+
+Training = True    
 k_fold_load = False 
 n_data = 10000
-n_feats = 20
-n_threshold = 5
+n_feats = 1000
+n_threshold = 10
 Tree_max_depth = 20
-dct_file_name = 'dct_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+
 test_with_train_data = False
 ###################### Param setting END ########################
 
-def unpickle_from_file(file):
-    import pickle
-    with open(file, 'rb') as fo:
-        dict = pickle.load(fo, encoding='bytes')
-    return dict
 
-def shrink_data(X,y,n_data=100):
-    if n_data >= len(X):
-        n_data = len(X)-1
-    idx = np.random.choice(len(X[:,0]),n_data,replace = False)
-    X = X[idx,:]
-    y = y.flatten()[idx]
-    return X, y
+if algorithm is WhichAlgorithm.DCT:
+    trained_file_name = 'dct_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+elif algorithm is WhichAlgorithm.RFT:
+    trained_file_name = 'rft_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+elif algorithm is WhichAlgorithm.SVM:
+    trained_file_name = 'svm_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+elif algorithm is WhichAlgorithm.KNN:
+    trained_file_name = 'knn_'+ str(n_data) + '_' + str(n_feats) + '_' + str(n_threshold) + '.pkl'    
+else:
+    print("Pls select the algorithm to run")
+
+
 
 def load_data():
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))    
@@ -89,8 +95,6 @@ if __name__ == "__main__":
     # from sklearn import datasets
     # from sklearn.model_selection import train_test_split
 
-
-
     def accuracy(y_true, y_pred):
         accuracy = np.sum(y_true == y_pred) / len(y_true)
         return accuracy
@@ -109,34 +113,42 @@ if __name__ == "__main__":
         X_train_, y_train_, X_test_, y_test_ = load_data()
     
  
-    X_train_, y_train_ = shrink_data(X_train_, y_train_, n_data)
+    X_train_, y_train_ = sample_data(X_train_, y_train_, n_data)
 ###################### Load Data END ############################
     
 
 
 ###################### Train Data  ############################
-    if DCT_Training:
-        dct_ = DCT(Tree_max_depth=Tree_max_depth,n_feats = n_feats, n_threshold = n_threshold)
-        dct_.train(X_train_, y_train_)
-        ## Save Data 
+    if Training:
+        if algorithm is WhichAlgorithm.DCT:
+            training_model = DCT(Tree_max_depth=Tree_max_depth,n_feats = n_feats, n_threshold = n_threshold)
+            training_model.train(X_train_, y_train_)            
+        elif algorithm is WhichAlgorithm.RFT:            
+            training_model = RFT(Tree_max_depth=Tree_max_depth,max_n_feats = n_feats, max_n_threshold = n_threshold, n_trees = 3)            
+        elif algorithm is WhichAlgorithm.SVM:
+            print("SVM is not available yet")
+        elif algorithm is WhichAlgorithm.KNN:
+            print("KNN is not available yet")
         
-        with open(dct_file_name,'wb') as outp:            
-            pickle.dump(dct_,outp,pickle.HIGHEST_PROTOCOL)
-            print("Trained model saved= " + dct_file_name)
+        training_model.train(X_train_, y_train_)
+        
+        with open(trained_file_name,'wb') as outp:            
+            pickle.dump(training_model,outp,pickle.HIGHEST_PROTOCOL)
+            print("Trained model saved= " + trained_file_name)
     
 ###################### Train Data END  ############################
     
 
 ###################### Test  ############################
-    if not DCT_Training:
-        print("No more Training, Loading trained model = " + dct_file_name)
-        with open(dct_file_name,'rb') as inp:
-            dct_ = pickle.load(inp)
+    if not Training:
+        print("No more Training, Loading trained model = " + trained_file_name)
+        with open(trained_file_name,'rb') as inp:
+            train_model = pickle.load(inp)
     if test_with_train_data:
-        y_pred = dct_.predict(X_train_)
+        y_pred = train_model.predict(X_train_)
         acc = accuracy(y_train_, y_pred)
     else:
-        y_pred = dct_.predict(X_test_)
+        y_pred = train_model.predict(X_test_)
         acc = accuracy(y_test_, y_pred)
 ###################### Test END ############################
     
