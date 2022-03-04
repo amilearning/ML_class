@@ -29,3 +29,6 @@ def sample_data(X,y,n_data=100):
 def accuracy(y_true, y_pred):
         accuracy = np.sum(y_true == y_pred) / len(y_true)
         return accuracy
+
+def euclidiean_distance(x,y):    
+    return np.sqrt(np.sum(x-y)**2)

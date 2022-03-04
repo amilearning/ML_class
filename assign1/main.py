@@ -1,28 +1,42 @@
 
 from distutils.log import error
 import sys
-from turtle import end_fill 
 import numpy as np
 import os
 import pickle 
-from collections import Counter 
+from collections import Counter
+from knn import KNN 
 from decision_tree import TreeNode, DCT
 from random_foreset import RFT
+from knn import KNN
 from random import randrange
 from utils import *
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))    
+
+
 ###################### Param setting ############################
-# Decition Tree = 0, Random Forest = 1, SVM = 2, kNN = 3
-algorithm = WhichAlgorithm.DCT
+# Decition Tree = DCT , Random Forest = RFT, SVM = SVM, kNN = KNN
+algorithm = WhichAlgorithm.KNN
 
 Training = True    
 k_fold_load = False 
-n_data = 100
+
+## Param for DCT 
+n_data = 10000
 n_feats = 100
 n_threshold = 10
 Tree_max_depth = 20
+## Param for RFT
+n_trees = 3
+## Param for SVM
 
-test_with_train_data = False
+## Param for KNN
+knn_param_k = 100
+n_random_sample = 300
+
+
+
+test_with_train_data = True
 ###################### Param setting END ########################
 
 
@@ -116,7 +130,7 @@ if __name__ == "__main__":
         elif algorithm is WhichAlgorithm.SVM:
             print("SVM is not available yet")
         elif algorithm is WhichAlgorithm.KNN:
-            print("KNN is not available yet")
+            train_model = KNN(k = knn_param_k,n_random_sample = n_random_sample)            
         
         train_model.train(X_train_, y_train_)
         

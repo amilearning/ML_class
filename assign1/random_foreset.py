@@ -1,6 +1,4 @@
 import sys
-from tkinter.tix import Tree
-from turtle import left 
 import numpy as np
 import os
 import pickle 
@@ -23,6 +21,9 @@ class RFT:
             # get random #features and #threshold 
             n_feats = np.random.randint(self.max_n_feats*0.5,self.max_n_feats)
             n_threshold = np.random.randint(self.max_n_threshold*0.5,self.max_n_threshold)            
+            print(20*'<')
+            print('Tree ' + str(self.tree_id) + ' Initiated')
+            print(20*'>')
             tree_ = DCT(Tree_max_depth=self.Tree_max_depth, n_feats = n_feats, n_threshold = n_threshold, tree_id = self.tree_id)            
             self.tree_id +=1
             sampled_X_train, sampled_y_train = sample_data(X,y,n_data=len(y)/5)

@@ -1,6 +1,4 @@
 import sys
-from tkinter.tix import Tree
-from turtle import left 
 import numpy as np
 import os
 import pickle 
