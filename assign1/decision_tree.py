@@ -45,7 +45,7 @@ class DCT:
         self.root_node = self.build_tree(X, y)
     
     def is_leaf(self,tree_depth = None, n_samples = None, n_labels = None):
-        if (tree_depth >= self.Tree_max_depth or n_labels == 1 or n_samples < 2):
+        if (tree_depth >= self.Tree_max_depth or n_labels < 2  or n_samples < 2):
             return True
         return False
 
@@ -53,7 +53,7 @@ class DCT:
         n_samples, node_feature_dim = X.shape     
         n_labels = len(np.unique(y))   
         
-        if (self.is_leaf(tree_depth,n_samples,n_labels)):
+        if (self.is_leaf(tree_depth,n_samples,n_labels)):            
             leaf_value = self.common_label(y)
             self.Node_id +=1            
             return TreeNode(depth = tree_depth, Node_id = self.Node_id, label=leaf_value)
@@ -65,8 +65,14 @@ class DCT:
         left_idxs = np.argwhere(X[:, best_feat] <= best_thresh).flatten()
         right_idxs = np.argwhere(X[:, best_feat] > best_thresh).flatten()
         
+        if len(left_idxs) ==0 or len(right_idxs) ==0:
+            leaf_value = self.common_label(y)
+            self.Node_id +=1            
+            return TreeNode(depth = tree_depth, Node_id = self.Node_id, label=leaf_value)
+    
         left = self.build_tree(X[left_idxs, :], y[left_idxs], tree_depth + 1)
         right = self.build_tree(X[right_idxs, :], y[right_idxs], tree_depth + 1)
+        
         self.Node_id +=1        
         return TreeNode(tree_depth, self.Node_id, best_feat, best_thresh, left, right)
 
@@ -79,9 +85,8 @@ class DCT:
         for feat_idx in feat_idxs:
             X_column = X[:, feat_idx]
             threshold_candidates = np.unique(X_column)
-            # if len(threshold_candidates) > self.n_threshold:
-            #     threshold_candidates = np.random.choice(threshold_candidates,self.n_threshold,replace = False)             
-            threshold_candidates = np.linspace(1,254,self.n_threshold,dtype=int)
+            if len(threshold_candidates) >= self.n_threshold:
+                threshold_candidates = np.random.choice(threshold_candidates,self.n_threshold,replace = False)                         
             for threshold in threshold_candidates:
                 gain = self.information_gain(y, X_column, threshold)
                 if gain > max_gain:

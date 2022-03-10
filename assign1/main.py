@@ -121,8 +121,7 @@ if __name__ == "__main__":
     if k_fold_load:
         X_train_set, y_train_set, X_test, y_test = k_fold_data_load(numFolds = 5)
     else:
-        X_train_, y_train_, X_test_, y_test_ = load_data()
-    
+        X_train_, y_train_, X_test_, y_test_ = load_data()    
  
     X_train_, y_train_ = sample_data(X_train_, y_train_, n_data)
 #>>>>>>>>>>>>>>>>>>>>> Load Data END   #<<<<<<<<<<<<<<<<<<<<
