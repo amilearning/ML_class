@@ -1,4 +1,5 @@
 assign1/trained_weigths/
 assign1/cifar10/
+assign1/cifar-100/
 class-venv/
 __pycache__/

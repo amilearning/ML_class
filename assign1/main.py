@@ -17,7 +17,7 @@ from sklearn.model_selection import GridSearchCV
 
 ###################### Param setting ############################
 # Decition Tree = DCT , Random Forest = RFT, SVM = SVM, kNN = KNN
-algorithm = WhichAlgorithm.SVM
+algorithm = WhichAlgorithm.DCT
 
 Training = True    
 k_fold_load = False 
@@ -41,8 +41,6 @@ knn_param_k = 100
 n_random_sample = 99
 k_mean_max_iters = 1000
 KMean_enbled = False
-
-
 
 test_with_train_data = False
 ###################### Param setting END ########################

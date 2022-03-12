@@ -198,7 +198,8 @@ if __name__ == "__main__":
 
             for idx, X_train_  in enumerate(X_train_set):                
                 y_train_ =  y_train_set[idx]                   
-                train_model = svm.SVC(C = C_param, kernel = kernel, degree = degree, gamma = gamma)            
+                # train_model = svm.SVC(C = C_param, kernel = kernel, degree = degree, gamma = gamma)            
+                train_model = svm.SVC(C = C_param, kernel = kernel)            
                 train_model.fit(X_train_, y_train_)                  
                 ## Training data accuracy
                 y_train_pred = train_model.predict(X_train_)
@@ -208,6 +209,7 @@ if __name__ == "__main__":
                 acc = accuracy(y_test, y_pred)
                 acc_tmp +=acc
                 train_acc_tmp +=train_acc
+                print("fold tmp_train_acc = " + str(acc_tmp/(idx+1)))
             acc_result = acc_tmp/len(X_train_set)
             train_acc_result = train_acc_tmp/len(X_train_set)
             acc_plot_c.append(acc_result)
@@ -227,6 +229,10 @@ if __name__ == "__main__":
             KMean_enbled = param["KMean_enbled"]
             knn_param_k = param["knn_param_k"]            
             k_mean_max_iters = param["k_mean_max_iters"]
+            acc_plot_x.append(KMean_enbled)
+            acc_plot_y.append(knn_param_k)
+            acc_plot_z.append(k_mean_max_iters)  
+
             for idx, X_train_  in enumerate(X_train_set):                
                 y_train_ =  y_train_set[idx]                                         
                 train_model = KNN(KMean_enbled = KMean_enbled, k = knn_param_k, n_random_sample = None, k_mean_max_iters = k_mean_max_iters)            
@@ -259,36 +265,44 @@ if __name__ == "__main__":
 #             acc_plot_z.append(C_param)  
 
 #>>>>>>>>>>>>>>>>>>>>> PLOT START  #<<<<<<<<<<<<<<<<<<<<
-    print("train acc" )
-    print(acc_plot_train_c)
-    print("test acc" )
-    print(acc_plot_c)           
+#     print("train acc" )
+#     print(acc_plot_train_c)
+#     print("test acc" )
+#     print(acc_plot_c)           
 
-    fig = plt.figure(1)
-    ax = fig.add_subplot(111, projection='3d')
+#     fig = plt.figure(1)
+#     ax = fig.add_subplot(111, projection='3d')
 
+# #  KMean_enbled = param["KMean_enbled"]
+# #  knn_param_k = param["knn_param_k"]            
+# #  k_mean_max_iters = param["k_mean_max_iters"]
+#             # acc_plot_x.append(degree)
+#             # acc_plot_y.append(gamma)
+#             # acc_plot_z.append(C_param)  
 
-    ax.set_xlabel('degree')
-    ax.set_ylabel('gamma')
-    ax.set_zlabel('C')
-    img = ax.scatter(acc_plot_x, acc_plot_y, acc_plot_z, c=acc_plot_c)    
-    fig_colorbar = fig.colorbar(img)    
-    fig_colorbar.set_label('Test Accuracy')
+#     ax.set_xlabel('knn_param_k')
+#     ax.set_ylabel('k_mean_max_iters')
+#     ax.set_zlabel('Test Accuracy')
+#     img = ax.scatter(acc_plot_y,acc_plot_z,acc_plot_c)
+#     # img = ax.scatter(acc_plot_x, acc_plot_y, acc_plot_z, c=acc_plot_c)    
+#     # fig_colorbar = fig.colorbar(img)    
+#     # fig_colorbar.set_label('Test Accuracy')
 
-    fig2 = plt.figure(2)
-    ax2 = fig2.add_subplot(111, projection='3d')
-    ax2.set_xlabel('degree')
-    ax2.set_ylabel('gamma')
-    ax2.set_zlabel('C')
-    img2 = ax2.scatter(acc_plot_x, acc_plot_y, acc_plot_z, c=acc_plot_train_c)
-    fig2_colorbar = fig2.colorbar(img2)    
-    fig2_colorbar.set_label('Train Accuracy')
+#     fig2 = plt.figure(2)
+#     ax2 = fig2.add_subplot(111, projection='3d')
+#     ax2.set_xlabel('knn_param_k')
+#     ax2.set_ylabel('k_mean_max_iters')
+#     ax2.set_zlabel('Train Accuracy')
+#     img2 = ax2.scatter(acc_plot_y, acc_plot_z, acc_plot_train_c)
+#     # img2 = ax2.scatter(acc_plot_x, acc_plot_y, acc_plot_z, c=acc_plot_train_c)
+#     # fig2_colorbar = fig2.colorbar(img2)    
+#     # fig2_colorbar.set_label('Train Accuracy')
     
-    plt.show()
+#     plt.show()
 
 #>>>>>>>>>>>>>>>>>>>>> PLOT END  #<<<<<<<<<<<<<<<<<<<<
 
 
 
-    print("Done")
+    print(" Training Done")
     

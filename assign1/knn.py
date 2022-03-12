@@ -91,9 +91,13 @@ class KNN:
     def predict(self, x):  
         
         if self.KMean_enbled:
-            distances_to_clusters= [euclidean_distance(x,sample_x) for sample_x in self.centroids]
-            nearest_cluster_idx = np.argsort(distances_to_clusters)[0]    
-            return self.cluster_y_label[nearest_cluster_idx]
+            predicted_labels = []
+            for x_ in x:                
+                distances_to_clusters= [euclidean_distance(x_,sample_x) for sample_x in self.centroids]
+                nearest_cluster_idx = np.argsort(distances_to_clusters)[0]    
+                k_nearest_labels = self.cluster_y_label[nearest_cluster_idx]
+                predicted_labels.append(k_nearest_labels)
+            return predicted_labels
         else:
             distances= [euclidean_distance(x,sample_x) for sample_x in self.x_sample]
             k_idx = np.argsort(distances)[:self.k]
